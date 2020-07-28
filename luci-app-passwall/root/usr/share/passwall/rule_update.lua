@@ -13,10 +13,11 @@ local gfwlist_update = 0
 local chnroute_update = 0
 local chnlist_update = 0
 
--- match comments/title/whitelist/ip address
+-- match comments/title/whitelist/ip address/excluded_domain
 local comment_pattern = "^[!\\[@]+"
 local ip_pattern = "^%d+%.%d+%.%d+%.%d+"
 local domain_pattern = "([%w%-%_]+%.[%w%.%-%_]+)[%/%*]*"
+local excluded_domain = {"apple.com", "sina.cn","sina.com.cn","baidu.com","byr.cn","jlike.com","weibo.com","zhongsou.com","youdao.com","sogou.com","so.com","soso.com","aliyun.com","taobao.com","jd.com","qq.com"}
 
 -- gfwlist parameter
 local mydnsip = '127.0.0.1'
@@ -25,6 +26,7 @@ local ipsetname = 'gfwlist'
 
 -- custom url
 local enable_custom_url = ucic:get_first(name, 'global_rules', "enable_custom_url", 0)
+enable_custom_url = 1
 local gfwlist_url = ucic:get_first(name, 'global_rules', "gfwlist_url", "https://cdn.jsdelivr.net/gh/Loukky/gfwlist-by-loukky/gfwlist.txt")
 local chnroute_url = ucic:get_first(name, 'global_rules', "chnroute_url", "https://ispip.clang.cn/all_cn.txt")
 local chnlist_url_1 = 'https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/accelerated-domains.china.conf'
@@ -137,13 +139,22 @@ local function fetch_chnlist()
 	return sret;
 end
 
+--check excluded domain
+local function check_excluded_domain(value)
+	for k,v in ipairs(excluded_domain) do
+		if value:find(v) then
+			return true
+		end
+	end
+end
+
 --gfwlist转码至dnsmasq格式
 local function generate_gfwlist()
 	local domains = {}
 	local out = io.open("/tmp/gfwlist_tmp", "w")
 
 	for line in io.lines("/tmp/gfwlist.txt") do
-		if not (string.find(line, comment_pattern) or string.find(line, ip_pattern)) then
+		if not (string.find(line, comment_pattern) or string.find(line, ip_pattern) or check_excluded_domain(line)) then
 			local start, finish, match = string.find(line, domain_pattern)
 			if (start) then
 				domains[match] = true

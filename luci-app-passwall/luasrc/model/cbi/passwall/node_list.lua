@@ -38,7 +38,7 @@ s = m:section(TypedSection, "nodes")
 s.anonymous = true
 s.addremove = true
 s.template = "cbi/tblsection"
-s.extedit = d.build_url("admin", "vpn", appname, "node_config", "%s")
+s.extedit = d.build_url("admin", "services", appname, "node_config", "%s")
 function s.create(e, t)
     local uuid = _api.gen_uuid()
     t = uuid
@@ -49,7 +49,7 @@ end
 function s.remove(e, t)
     s.map.proceed = true
     s.map:del(t)
-    luci.http.redirect(d.build_url("admin", "vpn", appname, "node_list"))
+    luci.http.redirect(d.build_url("admin", "services", appname, "node_list"))
 end
 
 if m:get("@global_other[0]", "show_group") == "1" then
@@ -72,7 +72,7 @@ if m:get("@global_other[0]", "compact_display_nodes") == "1" then
         local remarks = m:get(n, "remarks") or ""
         local type = m:get(n, "type") or ""
         if type == "V2ray" then
-            local protocol = m:get(n, "v2ray_protocol")
+            local protocol = m:get(n, "protocol")
             if protocol == "_balancing" then
                 type = type .. " 负载均衡"
             elseif protocol == "_shunt" then
@@ -111,7 +111,7 @@ else
         if v then
             result = translate(v)
             if v == "V2ray" then
-                local protocol = m:get(n, "v2ray_protocol")
+                local protocol = m:get(n, "protocol")
                 if protocol == "_balancing" then
                     result = result .. " 负载均衡"
                 elseif protocol == "_shunt" then
@@ -149,7 +149,7 @@ end
 o.cfgvalue = function(t, n)
     local type = m:get(n, "type") or ""
     if type == "V2ray" then
-        local protocol = m:get(n, "v2ray_protocol","")
+        local protocol = m:get(n, "protocol","")
         if protocol == "_balancing" or protocol == "_shunt" then
             return "---"
         end

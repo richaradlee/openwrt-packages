@@ -7,8 +7,8 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
 PKG_VERSION:=3.9
-PKG_RELEASE:=4
-PKG_DATE:=20200705
+PKG_RELEASE:=23
+PKG_DATE:=20200727
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -39,6 +39,10 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_Trojan
 	bool "Include Trojan"
+	default n
+	
+config PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_GO
+	bool "Include Trojan_GO"
 	default n
 	
 config PACKAGE_$(PKG_NAME)_INCLUDE_Brook
@@ -91,7 +95,7 @@ define Package/$(PKG_NAME)
   +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server:shadowsocksr-libev-server \
   +PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray \
   +PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:trojan \
-  +PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:ipt2socks \
+  +PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_GO:trojan-go \
   +PACKAGE_$(PKG_NAME)_INCLUDE_Brook:brook \
   +PACKAGE_$(PKG_NAME)_INCLUDE_kcptun:kcptun-client \
   +PACKAGE_$(PKG_NAME)_INCLUDE_haproxy:haproxy \
@@ -114,10 +118,10 @@ endef
 define Package/$(PKG_NAME)/conffiles
 /etc/config/passwall
 /etc/config/passwall_server
-/usr/share/passwall/rules/blacklist_host
-/usr/share/passwall/rules/blacklist_ip
-/usr/share/passwall/rules/whitelist_host
-/usr/share/passwall/rules/whitelist_ip
+/usr/share/passwall/rules/proxy_host
+/usr/share/passwall/rules/proxy_ip
+/usr/share/passwall/rules/direct_host
+/usr/share/passwall/rules/direct_ip
 endef
 
 define Package/$(PKG_NAME)/install

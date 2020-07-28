@@ -11,6 +11,7 @@ config global
 	option udp_proxy_mode 'chnroute'
 	option localhost_tcp_proxy_mode 'gfwlist'
 	option localhost_udp_proxy_mode 'gfwlist'
+	option socks_server '0.0.0.0:1080'
 
 config global_haproxy
 	option balancing_enable '0'
@@ -54,6 +55,7 @@ config global_rules
 
 config global_app
 	option v2ray_file '/usr/bin/v2ray/'
+	option trojan_go_file '/usr/bin/trojan-go'
 	option kcptun_client_file '/usr/bin/kcptun-client'
 	option brook_file '/usr/bin/brook'
 
