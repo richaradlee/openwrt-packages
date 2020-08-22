@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2018-2020 Lienol <lawlienol@gmail.com>
+# Copyright (C) 2018-2020 L-WRT Team
 
 . $IPKG_INSTROOT/lib/functions.sh
 . $IPKG_INSTROOT/lib/functions/service.sh
@@ -289,9 +289,9 @@ load_config() {
 	else
 		process=$(config_t_get global_forwarding process)
 	fi
-	LOCAL_DNS=$(config_t_get global up_china_dns dnsbyisp | sed 's/:/#/g')
+	LOCAL_DNS=$(config_t_get global up_china_dns default | sed 's/:/#/g')
 	[ -f "${RESOLVFILE}" ] && [ -s "${RESOLVFILE}" ] || RESOLVFILE=/tmp/resolv.conf.auto
-	DEFAULT_DNS=$(sed -n 's/^nameserver[ \t]*\([^ ]*\)$/\1/p' "${RESOLVFILE}" | grep -v "0.0.0.0" | grep -v "127.0.0.1" | grep -v "^::$" | head -2 | tr '\n' ',')
+	DEFAULT_DNS=$(echo -n $(sed -n 's/^nameserver[ \t]*\([^ ]*\)$/\1/p' "${RESOLVFILE}" | grep -v "0.0.0.0" | grep -v "127.0.0.1" | grep -v "^::$" | head -2) | tr ' ' ',')
 	if [ "${LOCAL_DNS}" = "default" ]; then
 		IS_DEFAULT_DNS=1
 		LOCAL_DNS="${DEFAULT_DNS:-119.29.29.29}"
@@ -452,7 +452,8 @@ run_redir() {
 					local run_kcptun_ip=$server_host
 					[ -n "$kcptun_server_host" ] && run_kcptun_ip=$(get_host_ip $network_type $kcptun_server_host)
 					KCPTUN_REDIR_PORT=$(get_new_port $KCPTUN_REDIR_PORT tcp)
-					ln_start_bin "$(first_type $(config_t_get global_app kcptun_client_file notset) kcptun-client)" "kcptun_tcp_$6" -l "0.0.0.0:$KCPTUN_REDIR_PORT" -r "$run_kcptun_ip:$kcptun_port" "$kcptun_config"
+					kcptun_params="-l 0.0.0.0:$KCPTUN_REDIR_PORT -r $run_kcptun_ip:$kcptun_port $kcptun_config"
+					ln_start_bin "$(first_type $(config_t_get global_app kcptun_client_file notset) kcptun-client)" "kcptun_tcp_$6" $kcptun_params
 				fi
 			fi
 			if [ "$type" == "ssr" ] || [ "$type" == "ss" ]; then
